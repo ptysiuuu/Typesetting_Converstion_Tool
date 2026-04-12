@@ -1,0 +1,34 @@
+# --- Build System ---
+build/
+CMakeUserPresets.json
+
+# --- Conan Generated ---
+# (Your existing list is good, but build/ usually covers it)
+conan_toolchain.cmake
+conanbuild.sh
+conanrun.sh
+*conanbuildenv*.sh
+*conanrunenv*.sh
+deactivate_*.sh
+*Config.cmake
+*ConfigVersion.cmake
+*Targets.cmake
+*-data.cmake
+cmakedeps_macros.cmake
+conandeps_legacy.cmake
+
+# --- Python (uv & Runtime) ---
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# --- C++ Binary Extensions ---
+*.so
+*.pyd
+
+# --- IDEs & OS ---
+.vscode/
+.idea/
+.DS_Store
