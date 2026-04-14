@@ -1,0 +1,25 @@
+{
+    "version": 3,
+    "configurePresets": [
+      {
+        "name": "macos-llvm",
+        "displayName": "macOS – Homebrew LLVM (Apple Silicon)",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_C_COMPILER":   "/opt/homebrew/opt/llvm/bin/clang",
+          "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+          "CMAKE_BUILD_TYPE":   "Debug"
+        }
+      },
+      {
+        "name": "linux-default",
+        "displayName": "Linux – system compiler",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug"
+        }
+      }
+    ]
+  }
