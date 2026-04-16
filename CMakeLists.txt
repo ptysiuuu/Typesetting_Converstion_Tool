@@ -6,15 +6,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(project_warnings INTERFACE)
-target_compile_options(project_warnings INTERFACE 
-    -Wall 
-    -Wextra 
-    -Werror 
+target_compile_options(project_warnings INTERFACE
+    -Wall
+    -Wextra
+    -Werror
     -Wpedantic
-    -Wno-c2y-extensions
     -fsanitize=undefined
 )
 target_link_options(project_warnings INTERFACE -fsanitize=undefined)
+
+if(APPLE)
+    target_compile_options(project_warnings INTERFACE -Wno-c2y-extensions)
+endif()
 
 if(POLICY CMP0148)
     cmake_policy(SET CMP0148 OLD)
@@ -75,15 +78,15 @@ target_link_libraries(core_logic PRIVATE
 
 # ── Python bindings ────────────────────────────────────────────────────────
 pybind11_add_module(converter_bindings bindings/bindings.cpp)
-target_link_libraries(converter_bindings PRIVATE 
-    core_logic 
+target_link_libraries(converter_bindings PRIVATE
+    core_logic
     project_warnings
 )
 
 # ── C++ tests ─────────────────────────────────────────────────────────────
 add_executable(cpp_tests tests/cpp/test_main.cpp)
-target_link_libraries(cpp_tests PRIVATE 
-    core_logic 
-    Catch2::Catch2WithMain 
+target_link_libraries(cpp_tests PRIVATE
+    core_logic
+    Catch2::Catch2WithMain
     project_warnings
 )
