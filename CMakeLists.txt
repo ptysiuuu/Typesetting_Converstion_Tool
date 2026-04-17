@@ -27,6 +27,7 @@ endif()
 # ── Conan dependencies ─────────────────────────────────────────────────────
 find_package(pybind11 REQUIRED)
 find_package(Catch2  REQUIRED)
+include(CTest)
 
 # ── cmark-gfm ─────────────────────────────────────────────────────────────
 include(FetchContent)
@@ -66,7 +67,7 @@ add_library(cmark-gfm::cmark-gfm-extensions ALIAS ${CMARK_EXT_TARGET})
 include_directories(include)
 
 add_library(core_logic OBJECT
-    src/parser.cpp
+    src/parsers/gfm_parser.cpp
     src/writers/latex_writer.cpp
     src/writers/typst_writer.cpp
     src/dispatcher.cpp
@@ -85,9 +86,12 @@ target_link_libraries(converter_bindings PRIVATE
 )
 
 # ── C++ tests ─────────────────────────────────────────────────────────────
-add_executable(cpp_tests tests/cpp/test_main.cpp)
+add_executable(cpp_tests tests/cpp/test_ast.cpp)
 target_link_libraries(cpp_tests PRIVATE
     core_logic
     Catch2::Catch2WithMain
     project_warnings
 )
+
+include(Catch)
+catch_discover_tests(cpp_tests)
