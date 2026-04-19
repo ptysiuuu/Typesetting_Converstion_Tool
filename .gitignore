@@ -33,3 +33,5 @@ __pycache__/
 .idea/
 .DS_Store
 CMakeUserPresets.json 
+build_ubuntu.sh
+llvm.sh
