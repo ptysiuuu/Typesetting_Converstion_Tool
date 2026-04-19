@@ -3,7 +3,6 @@ build/
 CMakeUserPresets.json
 
 # --- Conan Generated ---
-# (Your existing list is good, but build/ usually covers it)
 conan_toolchain.cmake
 conanbuild.sh
 conanrun.sh

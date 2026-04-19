@@ -2,19 +2,23 @@ cmake_minimum_required(VERSION 3.20)
 project(MarkdownConverter VERSION 0.1.0 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(project_warnings INTERFACE)
-target_compile_options(project_warnings INTERFACE 
-    -Wall 
-    -Wextra 
-    -Werror 
+target_compile_options(project_warnings INTERFACE
+    -Wall
+    -Wextra
+    -Werror
     -Wpedantic
-    -Wno-c2y-extensions
     -fsanitize=undefined
 )
 target_link_options(project_warnings INTERFACE -fsanitize=undefined)
+
+if(APPLE)
+    target_compile_options(project_warnings INTERFACE -Wno-c2y-extensions)
+endif()
 
 if(POLICY CMP0148)
     cmake_policy(SET CMP0148 OLD)
@@ -23,6 +27,7 @@ endif()
 # ── Conan dependencies ─────────────────────────────────────────────────────
 find_package(pybind11 REQUIRED)
 find_package(Catch2  REQUIRED)
+include(CTest)
 
 # ── cmark-gfm ─────────────────────────────────────────────────────────────
 include(FetchContent)
@@ -62,7 +67,7 @@ add_library(cmark-gfm::cmark-gfm-extensions ALIAS ${CMARK_EXT_TARGET})
 include_directories(include)
 
 add_library(core_logic OBJECT
-    src/parser.cpp
+    src/parsers/gfm_parser.cpp
     src/writers/latex_writer.cpp
     src/writers/typst_writer.cpp
     src/dispatcher.cpp
@@ -75,15 +80,18 @@ target_link_libraries(core_logic PRIVATE
 
 # ── Python bindings ────────────────────────────────────────────────────────
 pybind11_add_module(converter_bindings bindings/bindings.cpp)
-target_link_libraries(converter_bindings PRIVATE 
-    core_logic 
+target_link_libraries(converter_bindings PRIVATE
+    core_logic
     project_warnings
 )
 
 # ── C++ tests ─────────────────────────────────────────────────────────────
-add_executable(cpp_tests tests/cpp/test_main.cpp)
-target_link_libraries(cpp_tests PRIVATE 
-    core_logic 
-    Catch2::Catch2WithMain 
+add_executable(cpp_tests tests/cpp/test_ast.cpp)
+target_link_libraries(cpp_tests PRIVATE
+    core_logic
+    Catch2::Catch2WithMain
     project_warnings
 )
+
+include(Catch)
+catch_discover_tests(cpp_tests)
