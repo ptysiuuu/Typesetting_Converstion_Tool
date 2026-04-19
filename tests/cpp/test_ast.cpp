@@ -55,6 +55,7 @@ TEST_CASE("AST architecture test", "[ast]") {
 		void visitTableRow(const TableRow &) override {}
 		void visitTableCell(const TableCell &) override {}
 		void visitLineBreak(const LineBreak &) override {}
+		std::string getOutput() const override { return ""; }
 	};
 
 	Document doc;

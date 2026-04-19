@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Paragraph;
 class Heading;
 class BoldText;
@@ -24,6 +26,7 @@ class WriterVisitor {
   public:
 	WriterVisitor() = default;
 	virtual ~WriterVisitor() = default;
+	std::string virtual getOutput() const = 0;
 	void virtual visitDocument(const Document &d) = 0;
 	void virtual visitParagraph(const Paragraph &p) = 0;
 	void virtual visitHeading(const Heading &h) = 0;

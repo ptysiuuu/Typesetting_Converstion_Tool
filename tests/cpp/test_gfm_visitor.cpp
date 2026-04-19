@@ -1,12 +1,12 @@
 #include "ast.h"
-#include "gfm_parser.h"
+#include "parsers/gfm_parser.h"
 #include <catch2/catch_test_macros.hpp>
 #include <string>
 
 class TestVisitor : public WriterVisitor {
   public:
 	std::string result;
-
+	std::string getOutput() const override { return ""; }
 	void visitDocument(const Document &d) override {
 		result += "[DOC] ";
 		for (auto it = d.childrenBegin(); it != d.childrenEnd(); ++it)
