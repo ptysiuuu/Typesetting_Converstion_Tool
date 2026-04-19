@@ -16,7 +16,7 @@ TEST_CASE("AST architecture test", "[ast]") {
 	STATIC_REQUIRE(std::is_base_of_v<ContainerNode, Paragraph>);
 	STATIC_REQUIRE(std::is_base_of_v<ContainerNode, BoldText>);
 	STATIC_REQUIRE(std::is_base_of_v<LeafNode, Text>);
-	STATIC_REQUIRE(std::is_base_of_v<LeafNode, Image>);
+	STATIC_REQUIRE(std::is_base_of_v<ContainerNode, Image>);
 
 	class MockVisitor : public WriterVisitor {
 	  public:
@@ -51,6 +51,10 @@ TEST_CASE("AST architecture test", "[ast]") {
 		void visitImage(const Image &) override {}
 		void visitTable(const Table &) override { result += "TABLE "; }
 		void visitHeading(const Heading &) override {}
+		void visitListItem(const ListItem &) override {}
+		void visitTableRow(const TableRow &) override {}
+		void visitTableCell(const TableCell &) override {}
+		void visitLineBreak(const LineBreak &) override {}
 	};
 
 	Document doc;

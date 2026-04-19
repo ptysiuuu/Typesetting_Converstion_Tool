@@ -24,12 +24,12 @@ if(POLICY CMP0148)
     cmake_policy(SET CMP0148 OLD)
 endif()
 
-# ── Conan dependencies ─────────────────────────────────────────────────────
+# Conan dependencies
 find_package(pybind11 REQUIRED)
 find_package(Catch2  REQUIRED)
 include(CTest)
 
-# ── cmark-gfm ─────────────────────────────────────────────────────────────
+# cmark-gfm
 include(FetchContent)
 
 # CACHE BOOL is required to propagate into the subproject
@@ -63,7 +63,7 @@ endif()
 add_library(cmark-gfm::cmark-gfm            ALIAS ${CMARK_TARGET})
 add_library(cmark-gfm::cmark-gfm-extensions ALIAS ${CMARK_EXT_TARGET})
 
-# ── Core library ───────────────────────────────────────────────────────────
+# Core library
 include_directories(include)
 
 add_library(core_logic OBJECT
@@ -72,21 +72,27 @@ add_library(core_logic OBJECT
     src/writers/typst_writer.cpp
     src/dispatcher.cpp
 )
+
+set_target_properties(core_logic PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 target_link_libraries(core_logic PRIVATE
+	cmark-gfm::cmark-gfm-extensions
     cmark-gfm::cmark-gfm
-    cmark-gfm::cmark-gfm-extensions
     project_warnings
 )
 
-# ── Python bindings ────────────────────────────────────────────────────────
+# Python bindings
 pybind11_add_module(converter_bindings bindings/bindings.cpp)
 target_link_libraries(converter_bindings PRIVATE
     core_logic
     project_warnings
 )
 
-# ── C++ tests ─────────────────────────────────────────────────────────────
-add_executable(cpp_tests tests/cpp/test_ast.cpp)
+# C++ tests
+add_executable(cpp_tests
+    tests/cpp/test_ast.cpp
+    tests/cpp/test_gfm_visitor.cpp
+)
 target_link_libraries(cpp_tests PRIVATE
     core_logic
     Catch2::Catch2WithMain

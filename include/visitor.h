@@ -1,3 +1,5 @@
+#pragma once
+
 class Paragraph;
 class Heading;
 class BoldText;
@@ -13,6 +15,10 @@ class Image;
 class Table;
 class Text;
 class Document;
+class ListItem;
+class TableRow;
+class TableCell;
+class LineBreak;
 
 class WriterVisitor {
   public:
@@ -33,4 +39,8 @@ class WriterVisitor {
 	void virtual visitImage(const Image &i) = 0;
 	void virtual visitTable(const Table &t) = 0;
 	void virtual visitText(const Text &t) = 0;
+	void virtual visitListItem(const ListItem &li) = 0;
+	void virtual visitTableRow(const TableRow &tr) = 0;
+	void virtual visitTableCell(const TableCell &tc) = 0;
+	void virtual visitLineBreak(const LineBreak &lb) = 0;
 };

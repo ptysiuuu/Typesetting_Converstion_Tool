@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <vector>
 #include <visitor.h>
@@ -87,6 +89,31 @@ class Table : public ContainerNode {
 	void accept(WriterVisitor &v) override { v.visitTable(*this); }
 };
 
+class ListItem : public ContainerNode {
+  public:
+	void accept(WriterVisitor &v) override { v.visitListItem(*this); }
+};
+
+class TableRow : public ContainerNode {
+  public:
+	void accept(WriterVisitor &v) override { v.visitTableRow(*this); }
+};
+
+class TableCell : public ContainerNode {
+  public:
+	void accept(WriterVisitor &v) override { v.visitTableCell(*this); }
+};
+
+class Image : public ContainerNode {
+  public:
+	Image(std::string url) : url(url) {};
+	void accept(WriterVisitor &v) override { v.visitImage(*this); }
+	std::string getUrl() const { return url; }
+
+  private:
+	std::string url;
+};
+
 class Text : public LeafNode {
   public:
 	Text(std::string text) : text(text) {};
@@ -102,21 +129,11 @@ class ThematicBreak : public LeafNode {
 	void accept(WriterVisitor &v) override { v.visitThematicBreak(*this); }
 };
 
-class Image : public LeafNode {
-  public:
-	Image(std::string url) : url(url) {};
-	void accept(WriterVisitor &v) override { v.visitImage(*this); }
-	std::string getUrl() const { return url; }
-
-  private:
-	std::string url;
-};
-
 class InlineCode : public LeafNode {
   public:
 	InlineCode(std::string content) : content(content) {};
 	void accept(WriterVisitor &v) override { v.visitInlineCode(*this); }
-	std::string getContent() { return content; };
+	std::string getContent() const { return content; };
 
   private:
 	std::string content;
@@ -128,9 +145,14 @@ class FencedCodeBlock : public LeafNode {
 		: language(language), content(content) {};
 	void accept(WriterVisitor &v) override { v.visitFencedCodeBlock(*this); }
 	std::string getLanguage() const { return language; }
-	std::string getContent() { return content; };
+	std::string getContent() const { return content; };
 
   private:
 	std::string language;
 	std::string content;
+};
+
+class LineBreak : public LeafNode {
+  public:
+	void accept(WriterVisitor &v) override { v.visitLineBreak(*this); }
 };
