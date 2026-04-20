@@ -6,7 +6,7 @@
 
 class LaTeXWriter : public WriterVisitor {
   public:
-	LaTeXWriter() = default;
+	LaTeXWriter(bool standalone = true) : standalone(standalone) {};
 
 	std::string getOutput() const override { return output; }
 
@@ -32,4 +32,6 @@ class LaTeXWriter : public WriterVisitor {
 
   private:
 	std::string output;
+	bool standalone;
+	std::string escapeLatex(const std::string text);
 };

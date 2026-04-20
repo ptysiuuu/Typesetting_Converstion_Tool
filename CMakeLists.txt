@@ -73,12 +73,12 @@ add_library(core_logic OBJECT
     src/dispatcher.cpp
 )
 
-FetchContent_GetProperties(cmark_gfm) 
-target_include_directories(core_logic PRIVATE 
+FetchContent_GetProperties(cmark_gfm)
+target_include_directories(core_logic PRIVATE
     include
-    ${cmark_gfm_SOURCE_DIR}/src         
-    ${cmark_gfm_BINARY_DIR}/src        
-    ${cmark_gfm_SOURCE_DIR}/extensions 
+    ${cmark_gfm_SOURCE_DIR}/src
+    ${cmark_gfm_BINARY_DIR}/src
+    ${cmark_gfm_SOURCE_DIR}/extensions
 )
 
 set_target_properties(core_logic PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -100,6 +100,7 @@ target_link_libraries(converter_bindings PRIVATE
 add_executable(cpp_tests
     tests/cpp/test_ast.cpp
     tests/cpp/test_gfm_visitor.cpp
+	tests/cpp/test_latex_writer.cpp
 )
 target_link_libraries(cpp_tests PRIVATE
     core_logic
