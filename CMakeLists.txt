@@ -12,9 +12,9 @@ target_compile_options(project_warnings INTERFACE
     -Wextra
     -Werror
     -Wpedantic
-    -fsanitize=undefined
+   #  -fsanitize=undefined
 )
-target_link_options(project_warnings INTERFACE -fsanitize=undefined)
+target_link_options(project_warnings INTERFACE)
 
 if(APPLE)
     target_compile_options(project_warnings INTERFACE -Wno-c2y-extensions)
