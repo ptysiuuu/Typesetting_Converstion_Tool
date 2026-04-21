@@ -1,5 +1,4 @@
 
-// TODO:  still not implemented so maght be changed earlier
 #include "dispatcher.h"
 #include "parsers/gfm_parser.h"
 #include "writers/latex_writer.h"
@@ -8,8 +7,7 @@
 
 std::string convert_markdown(const std::string &source_text,
 							 const std::string &target_format) {
-	GFMParser
-		parser; //  TODO: TO BE CHANGED IN CASE THERE IS A DIFFERENT PARSER NAME
+	GFMParser parser; 
 	auto document = parser.parse(source_text);
 
 	if (!document) {
