@@ -1,6 +1,7 @@
 #include "parsers/gfm_parser.h"
 #include "ast.h"
 #include <cmark-gfm-core-extensions.h>
+#include <cmark-gfm-extension_api.h>
 #include <cmark-gfm.h>
 #include <memory>
 #include <stack>
@@ -17,7 +18,6 @@ std::unique_ptr<Document> GFMParser::parse(const std::string &markdown_text) {
 	if (table_extension != nullptr) {
 		cmark_parser_attach_syntax_extension(parser, table_extension);
 	}
-	// In future extensions can be added here in the same way
 
 	cmark_parser_feed(parser, markdown_text.c_str(), markdown_text.length());
 	cmark_node *raw_root = cmark_parser_finish(parser);
@@ -29,19 +29,23 @@ std::unique_ptr<Document> GFMParser::parse(const std::string &markdown_text) {
 			"Error: cmark-gfm failed to parse the document");
 	}
 
-	auto deleter = [](cmark_node *node) { cmark_node_free(node); };
-	std::unique_ptr<cmark_node, decltype(deleter)> safe_root(raw_root, deleter);
+	auto node_deleter = [](cmark_node *node) { cmark_node_free(node); };
+	std::unique_ptr<cmark_node, decltype(node_deleter)> safe_root(raw_root,
+																  node_deleter);
 
 	auto document = std::make_unique<Document>();
 	std::stack<ContainerNode *> node_stack;
 	node_stack.push(document.get());
 
-	cmark_iter *iter = cmark_iter_new(safe_root.get());
+	auto iter_deleter = [](cmark_iter *i) { cmark_iter_free(i); };
+	std::unique_ptr<cmark_iter, decltype(iter_deleter)> safe_iter(
+		cmark_iter_new(safe_root.get()), iter_deleter);
+
 	cmark_event_type ev_type;
 
-	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+	while ((ev_type = cmark_iter_next(safe_iter.get())) != CMARK_EVENT_DONE) {
 
-		cmark_node *cur = cmark_iter_get_node(iter);
+		cmark_node *cur = cmark_iter_get_node(safe_iter.get());
 		cmark_node_type type = cmark_node_get_type(cur);
 
 		if (ev_type == CMARK_EVENT_ENTER) {
@@ -64,7 +68,6 @@ std::unique_ptr<Document> GFMParser::parse(const std::string &markdown_text) {
 				node_stack.top()->addChild(std::move(text_node));
 				break;
 			}
-				// TODO: Add all cases which are implemented in the AST.h
 			case CMARK_NODE_HEADING: {
 				int level = cmark_node_get_heading_level(cur);
 				auto heading_node = std::make_unique<Heading>(level);
@@ -176,7 +179,16 @@ std::unique_ptr<Document> GFMParser::parse(const std::string &markdown_text) {
 				std::string ext_name = cmark_node_get_type_string(cur);
 
 				if (ext_name == "table") {
-					auto table_node = std::make_unique<Table>();
+					size_t colCount = 0;
+					cmark_node *firstRow = cmark_node_first_child(cur);
+					if (firstRow != nullptr) {
+						cmark_node *cell = cmark_node_first_child(firstRow);
+						while (cell != nullptr) {
+							++colCount;
+							cell = cmark_node_next(cell);
+						}
+					}
+					auto table_node = std::make_unique<Table>(colCount);
 					ContainerNode *raw_table = table_node.get();
 					node_stack.top()->addChild(std::move(table_node));
 					node_stack.push(raw_table);
@@ -225,8 +237,5 @@ std::unique_ptr<Document> GFMParser::parse(const std::string &markdown_text) {
 			}
 		}
 	}
-
-	cmark_iter_free(iter);
-
 	return document;
-};
+}

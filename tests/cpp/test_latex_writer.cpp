@@ -8,7 +8,7 @@ using Catch::Matchers::ContainsSubstring;
 
 TEST_CASE("LaTeXWriter generates correct LaTeX code", "[writer][latex]") {
 	auto doc = std::make_unique<Document>();
-	auto table = std::make_unique<Table>();
+	auto table = std::make_unique<Table>(2);
 	auto row = std::make_unique<TableRow>();
 
 	auto cell1 = std::make_unique<TableCell>();

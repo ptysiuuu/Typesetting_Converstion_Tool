@@ -28,11 +28,12 @@ void LaTeXWriter::visitDocument(const Document &d) {
 }
 
 void LaTeXWriter::visitParagraph(const Paragraph &p) {
-	output += R"(\n)";
-	for (auto it = p.childrenBegin(); it != p.childrenEnd(); ++it) {
+	if (!insideListItem)
+		output += "\n";
+	for (auto it = p.childrenBegin(); it != p.childrenEnd(); ++it)
 		(*it)->accept(*this);
-	}
-	output += R"(\n\n)";
+	if (!insideListItem)
+		output += "\n\n";
 }
 
 void LaTeXWriter::visitHeading(const Heading &h) {
@@ -115,9 +116,10 @@ void LaTeXWriter::visitOrderedList(const OrderedList &ol) {
 
 void LaTeXWriter::visitListItem(const ListItem &li) {
 	output += R"(\item )";
-	for (auto it = li.childrenBegin(); it != li.childrenEnd(); ++it) {
+	insideListItem = true;
+	for (auto it = li.childrenBegin(); it != li.childrenEnd(); ++it)
 		(*it)->accept(*this);
-	}
+	insideListItem = false;
 	output += "\n";
 }
 
@@ -135,6 +137,7 @@ void LaTeXWriter::visitImage(const Image &i) {
 	output += R"(\begin{figure}[h] \centering)";
 	output += R"(\includegraphics[width=\textwidth]{)";
 	output += i.getUrl();
+	output += "}\n";
 	output += R"(\caption{)";
 	for (auto it = i.childrenBegin(); it != i.childrenEnd(); ++it) {
 		(*it)->accept(*this);
@@ -147,7 +150,7 @@ void LaTeXWriter::visitBlockQuote(const BlockQuote &bq) {
 	for (auto it = bq.childrenBegin(); it != bq.childrenEnd(); ++it) {
 		(*it)->accept(*this);
 	}
-	output += R"(end{quote})";
+	output += R"(\end{quote})";
 }
 
 void LaTeXWriter::visitThematicBreak(const ThematicBreak &) {
@@ -156,32 +159,19 @@ void LaTeXWriter::visitThematicBreak(const ThematicBreak &) {
 }
 
 void LaTeXWriter::visitTable(const Table &t) {
-	auto it = t.childrenBegin();
-	if (it == t.childrenEnd())
+	if (t.getColCount() == 0)
 		return;
 
-	const Node *firstRow = it->get();
-	const ContainerNode *rowContainer =
-		dynamic_cast<const ContainerNode *>(firstRow);
-
-	size_t colCount = 0;
-	if (rowContainer) {
-		colCount = std::distance(rowContainer->childrenBegin(),
-								 rowContainer->childrenEnd());
-	}
-
 	output += R"(\begin{tabular}{)";
-	for (size_t i = 0; i < colCount; ++i) {
+	for (size_t i = 0; i < t.getColCount(); ++i)
 		output += "l";
-	}
 	output += "}\n";
 	output += R"(\toprule)"
 			  "\n";
 
 	bool isFirstRow = true;
-	for (; it != t.childrenEnd(); ++it) {
+	for (auto it = t.childrenBegin(); it != t.childrenEnd(); ++it) {
 		(*it)->accept(*this);
-
 		if (isFirstRow) {
 			output += R"(\midrule)"
 					  "\n";
@@ -196,12 +186,13 @@ void LaTeXWriter::visitTable(const Table &t) {
 }
 
 void LaTeXWriter::visitTableRow(const TableRow &tr) {
+	bool first = true;
 	for (auto it = tr.childrenBegin(); it != tr.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-
-		if (std::next(it) != tr.childrenEnd()) {
+		if (!first) {
 			output += " & ";
 		}
+		(*it)->accept(*this);
+		first = false;
 	}
 	output += R"( \\)"
 			  "\n";
@@ -221,9 +212,9 @@ void LaTeXWriter::visitText(const Text &t) {
 	output += safeText;
 }
 
-void LaTeXWriter::visitLineBreak(const LineBreak &) {}
+void LaTeXWriter::visitLineBreak(const LineBreak &) { output += "\\\\\n"; }
 
-std::string LaTeXWriter::escapeLatex(const std::string text) {
+std::string LaTeXWriter::escapeLatex(const std::string &text) {
 	std::string result = "";
 	for (auto character : text) {
 		switch (character) {

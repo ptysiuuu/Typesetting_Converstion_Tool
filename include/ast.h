@@ -13,6 +13,7 @@ class Node {
 
 class ContainerNode : public Node {
   public:
+	~ContainerNode() = default;
 	void addChild(std::unique_ptr<Node> pNode) {
 		children.push_back(std::move(pNode));
 	};
@@ -26,6 +27,7 @@ class ContainerNode : public Node {
 
 class LeafNode : public Node {
   public:
+	~LeafNode() = default;
 	LeafNode() = default;
 };
 
@@ -86,7 +88,12 @@ class BlockQuote : public ContainerNode {
 
 class Table : public ContainerNode {
   public:
+	Table(size_t colCount = 0) : colCount(colCount) {}
 	void accept(WriterVisitor &v) override { v.visitTable(*this); }
+	size_t getColCount() const { return colCount; }
+
+  private:
+	size_t colCount;
 };
 
 class ListItem : public ContainerNode {
