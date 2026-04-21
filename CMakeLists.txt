@@ -101,6 +101,7 @@ add_executable(cpp_tests
     tests/cpp/test_ast.cpp
     tests/cpp/test_gfm_visitor.cpp
 	tests/cpp/test_latex_writer.cpp
+    tests/cpp/test_dispatcher.cpp
 )
 target_link_libraries(cpp_tests PRIVATE
     core_logic
