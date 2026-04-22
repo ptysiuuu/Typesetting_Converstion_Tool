@@ -2,7 +2,8 @@
 
 #include <memory>
 #include <vector>
-#include <visitor.h>
+
+class WriterVisitor;
 
 class Node {
   public:
@@ -33,18 +34,18 @@ class LeafNode : public Node {
 
 class Document : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitDocument(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class Paragraph : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitParagraph(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class Heading : public ContainerNode {
   public:
 	Heading(int level) : level(level) {};
-	void accept(WriterVisitor &v) override { v.visitHeading(*this); }
+	void accept(WriterVisitor &v) override;
 	int getLevel() const { return level; }
 
   private:
@@ -53,28 +54,28 @@ class Heading : public ContainerNode {
 
 class BoldText : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitBoldText(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class ItalicText : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitItalicText(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class UnorderedList : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitUnorderedList(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class OrderedList : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitOrderedList(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class Link : public ContainerNode {
   public:
 	Link(std::string url) : url(url) {};
-	void accept(WriterVisitor &v) override { v.visitLink(*this); }
+	void accept(WriterVisitor &v) override;
 	std::string getUrl() const { return url; }
 
   private:
@@ -83,13 +84,13 @@ class Link : public ContainerNode {
 
 class BlockQuote : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitBlockQuote(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class Table : public ContainerNode {
   public:
 	Table(size_t colCount = 0) : colCount(colCount) {}
-	void accept(WriterVisitor &v) override { v.visitTable(*this); }
+	void accept(WriterVisitor &v) override;
 	size_t getColCount() const { return colCount; }
 
   private:
@@ -98,23 +99,23 @@ class Table : public ContainerNode {
 
 class ListItem : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitListItem(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class TableRow : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitTableRow(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class TableCell : public ContainerNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitTableCell(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class Image : public ContainerNode {
   public:
 	Image(std::string url) : url(url) {};
-	void accept(WriterVisitor &v) override { v.visitImage(*this); }
+	void accept(WriterVisitor &v) override;
 	std::string getUrl() const { return url; }
 
   private:
@@ -124,7 +125,7 @@ class Image : public ContainerNode {
 class Text : public LeafNode {
   public:
 	Text(std::string text) : text(text) {};
-	void accept(WriterVisitor &v) override { v.visitText(*this); };
+	void accept(WriterVisitor &v) override;
 	std::string getText() const { return text; };
 
   private:
@@ -133,13 +134,13 @@ class Text : public LeafNode {
 
 class ThematicBreak : public LeafNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitThematicBreak(*this); }
+	void accept(WriterVisitor &v) override;
 };
 
 class InlineCode : public LeafNode {
   public:
 	InlineCode(std::string content) : content(content) {};
-	void accept(WriterVisitor &v) override { v.visitInlineCode(*this); }
+	void accept(WriterVisitor &v) override;
 	std::string getContent() const { return content; };
 
   private:
@@ -150,7 +151,7 @@ class FencedCodeBlock : public LeafNode {
   public:
 	FencedCodeBlock(std::string language, std::string content)
 		: language(language), content(content) {};
-	void accept(WriterVisitor &v) override { v.visitFencedCodeBlock(*this); }
+	void accept(WriterVisitor &v) override;
 	std::string getLanguage() const { return language; }
 	std::string getContent() const { return content; };
 
@@ -161,5 +162,5 @@ class FencedCodeBlock : public LeafNode {
 
 class LineBreak : public LeafNode {
   public:
-	void accept(WriterVisitor &v) override { v.visitLineBreak(*this); }
+	void accept(WriterVisitor &v) override;
 };

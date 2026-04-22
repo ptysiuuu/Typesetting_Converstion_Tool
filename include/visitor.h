@@ -1,26 +1,7 @@
 #pragma once
 
 #include <string>
-
-class Paragraph;
-class Heading;
-class BoldText;
-class ItalicText;
-class InlineCode;
-class FencedCodeBlock;
-class UnorderedList;
-class OrderedList;
-class Link;
-class ThematicBreak;
-class BlockQuote;
-class Image;
-class Table;
-class Text;
-class Document;
-class ListItem;
-class TableRow;
-class TableCell;
-class LineBreak;
+#include "ast.h"
 
 class WriterVisitor {
   public:
@@ -46,4 +27,9 @@ class WriterVisitor {
 	void virtual visitTableRow(const TableRow &tr) = 0;
 	void virtual visitTableCell(const TableCell &tc) = 0;
 	void virtual visitLineBreak(const LineBreak &lb) = 0;
+	void visitChildren(const ContainerNode &node) {
+        for (auto it = node.childrenBegin(); it != node.childrenEnd(); ++it) {
+            (*it)->accept(*this);
+        }
+    }
 };

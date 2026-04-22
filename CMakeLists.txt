@@ -71,6 +71,7 @@ add_library(core_logic OBJECT
     src/writers/latex_writer.cpp
     src/writers/typst_writer.cpp
     src/dispatcher.cpp
+    src/ast.cpp
 )
 
 FetchContent_GetProperties(cmark_gfm)

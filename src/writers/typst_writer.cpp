@@ -9,17 +9,14 @@ void TypstWriter::visitDocument(const Document &d) {
         output += "# Required Typst settings: page, text, par\n\n";
     }
 
-    for (auto it = d.childrenBegin(); it != d.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(d);
 }
 
 void TypstWriter::visitParagraph(const Paragraph &p) {
     if (!insideListItem)
         output += "\n";
     
-    for (auto it = p.childrenBegin(); it != p.childrenEnd(); ++it)
-        (*it)->accept(*this);
+    visitChildren(p);
     
     if (!insideListItem)
         output += "\n\n";
@@ -32,25 +29,20 @@ void TypstWriter::visitHeading(const Heading &h) {
     }
     output += " ";
     
-    for (auto it = h.childrenBegin(); it != h.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(h);
+
     output += "\n";
 }
 
 void TypstWriter::visitBoldText(const BoldText &b) {
     output += "*";
-    for (auto it = b.childrenBegin(); it != b.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(b);
     output += "*";
 }
 
 void TypstWriter::visitItalicText(const ItalicText &i) {
     output += "_";
-    for (auto it = i.childrenBegin(); it != i.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(i);
     output += "_";
 }
 
@@ -75,9 +67,7 @@ void TypstWriter::visitUnorderedList(const UnorderedList &ul) {
     isInsideOrderedList = false; 
 
     output += "\n";
-    for (auto it = ul.childrenBegin(); it != ul.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(ul);
     output += "\n";
 
     isInsideOrderedList = previousState; 
@@ -88,9 +78,7 @@ void TypstWriter::visitOrderedList(const OrderedList &ol) {
     isInsideOrderedList = true; 
 
     output += "\n";
-    for (auto it = ol.childrenBegin(); it != ol.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(ol);
     output += "\n";
 
     isInsideOrderedList = previousState;
@@ -103,9 +91,7 @@ void TypstWriter::visitListItem(const ListItem &li) {
         output += "- "; 
     }
     insideListItem = true;
-    for (auto it = li.childrenBegin(); it != li.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(li);
     insideListItem = false;
     
     output += "\n";
@@ -115,9 +101,7 @@ void TypstWriter::visitLink(const Link &l) {
     output += "#link(\"";
     output += l.getUrl();
     output += "\")[";
-    for (auto it = l.childrenBegin(); it != l.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(l);
     output += "]";
 }
 
@@ -125,17 +109,13 @@ void TypstWriter::visitImage(const Image &i) {
     output += "#figure(\n  image(\"";
     output += i.getUrl();
     output += "\"),\n  caption: [";
-    for (auto it = i.childrenBegin(); it != i.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(i);
     output += "],\n)\n";
 }
 
 void TypstWriter::visitBlockQuote(const BlockQuote &bq) {
     output += "#quote(block: true)[";
-    for (auto it = bq.childrenBegin(); it != bq.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(bq);
     output += "]\n";
 }
 
@@ -151,23 +131,17 @@ void TypstWriter::visitTable(const Table &t) {
     output += "  inset: 10pt,\n";
     output += "  align: horizon,\n";
 
-    for (auto it = t.childrenBegin(); it != t.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(t);
     output += ")\n";
 }
 
 void TypstWriter::visitTableRow(const TableRow &tr) {
-    for (auto it = tr.childrenBegin(); it != tr.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(tr);
 }
 
 void TypstWriter::visitTableCell(const TableCell &tc) {
     output += "  [";
-    for (auto it = tc.childrenBegin(); it != tc.childrenEnd(); ++it) {
-        (*it)->accept(*this);
-    }
+    visitChildren(tc);
     output += "],\n";
 }
 
