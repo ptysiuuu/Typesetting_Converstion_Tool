@@ -6,7 +6,7 @@
 
 class TypstWriter : public WriterVisitor {
   public:
-	TypstWriter() = default;
+	TypstWriter(bool standalone) : standalone(standalone) {}
 
 	std::string getOutput() const override { return output; }
 
@@ -32,4 +32,8 @@ class TypstWriter : public WriterVisitor {
 
   private:
 	std::string output;
+	bool standalone;
+	bool insideListItem = false;
+	std::string escapeTypst(const std::string &text);
+	bool isInsideOrderedList = false;
 };
