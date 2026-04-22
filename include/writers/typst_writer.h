@@ -6,7 +6,7 @@
 
 class TypstWriter : public WriterVisitor {
   public:
-	TypstWriter(bool standalone) : standalone(standalone) {}
+	TypstWriter(bool standalone = true) : standalone(standalone) {}
 
 	std::string getOutput() const override { return output; }
 
