@@ -1,4 +1,32 @@
 #include "writers/latex_writer.h"
+#include "utils/escape.h"
+
+static std::string_view latexCharMap(char c) {
+	switch (c) {
+	case '&':
+		return R"(\&)";
+	case '$':
+		return R"(\$)";
+	case '%':
+		return R"(\%)";
+	case '#':
+		return R"(\#)";
+	case '_':
+		return R"(\_)";
+	case '{':
+		return R"(\{)";
+	case '}':
+		return R"(\})";
+	case '\\':
+		return R"(\textbackslash{})";
+	case '~':
+		return R"(\textasciitilde{})";
+	case '^':
+		return R"(\textasciicircum{})";
+	default:
+		return {};
+	}
+}
 
 void LaTeXWriter::visitDocument(const Document &d) {
 	if (standalone) {
@@ -196,44 +224,5 @@ void LaTeXWriter::visitText(const Text &t) {
 void LaTeXWriter::visitLineBreak(const LineBreak &) { output += "\\\\\n"; }
 
 std::string LaTeXWriter::escapeLatex(const std::string &text) {
-	std::string result = "";
-	result.reserve(text.size());
-	for (auto character : text) {
-		switch (character) {
-		case '&':
-			result += R"(\&)";
-			break;
-		case '$':
-			result += R"(\$)";
-			break;
-		case '%':
-			result += R"(\%)";
-			break;
-		case '#':
-			result += R"(\#)";
-			break;
-		case '_':
-			result += R"(\_)";
-			break;
-		case '{':
-			result += R"(\{)";
-			break;
-		case '}':
-			result += R"(\})";
-			break;
-		case '\\':
-			result += R"(\textbackslash{})";
-			break;
-		case '~':
-			result += R"(\textasciitilde{})";
-			break;
-		case '^':
-			result += R"(\textasciicircum{})";
-			break;
-		default:
-			result += character;
-			break;
-		}
-	}
-	return result;
+	return escapeText(text, latexCharMap);
 }

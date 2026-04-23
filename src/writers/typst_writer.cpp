@@ -1,4 +1,34 @@
 #include "writers/typst_writer.h"
+#include "utils/escape.h"
+
+static std::string_view typstCharMap(char c) {
+	switch (c) {
+	case '#':
+		return "\\#";
+	case '*':
+		return "\\*";
+	case '_':
+		return "\\_";
+	case '`':
+		return "\\`";
+	case '[':
+		return "\\[";
+	case ']':
+		return "\\]";
+	case '$':
+		return "\\$";
+	case '~':
+		return "\\~";
+	case '<':
+		return "\\<";
+	case '>':
+		return "\\>";
+	case '@':
+		return "\\@";
+	default:
+		return {};
+	}
+}
 
 void TypstWriter::visitDocument(const Document &d) {
 	if (standalone) {
@@ -151,47 +181,5 @@ void TypstWriter::visitText(const Text &t) {
 void TypstWriter::visitLineBreak(const LineBreak &) { output += "\n"; }
 
 std::string TypstWriter::escapeTypst(const std::string &text) {
-	std::string result = "";
-	result.reserve(text.size());
-	for (auto character : text) {
-		switch (character) {
-		case '#':
-			result += "\\#";
-			break;
-		case '*':
-			result += "\\*";
-			break;
-		case '_':
-			result += "\\_";
-			break;
-		case '`':
-			result += "\\`";
-			break;
-		case '[':
-			result += "\\[";
-			break;
-		case ']':
-			result += "\\]";
-			break;
-		case '@':
-			result += "\\@";
-			break;
-		case '<':
-			result += "\\<";
-			break;
-		case '>':
-			result += "\\>";
-			break;
-		case '~':
-			result += "\\~";
-			break;
-		case '$':
-			result += "\\$";
-			break;
-		default:
-			result += character;
-			break;
-		}
-	}
-	return result;
+	return escapeText(text, typstCharMap);
 }
