@@ -33,6 +33,6 @@ class LaTeXWriter : public WriterVisitor {
   private:
 	std::string output;
 	bool standalone;
-	bool insideListItem = false;
+	int listItemDepth = 0;
 	std::string escapeLatex(const std::string &text);
 };

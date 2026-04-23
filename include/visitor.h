@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include "ast.h"
+#include <string>
 
 class WriterVisitor {
   public:
@@ -27,9 +27,11 @@ class WriterVisitor {
 	void virtual visitTableRow(const TableRow &tr) = 0;
 	void virtual visitTableCell(const TableCell &tc) = 0;
 	void virtual visitLineBreak(const LineBreak &lb) = 0;
+
+  protected:
 	void visitChildren(const ContainerNode &node) {
-        for (auto it = node.childrenBegin(); it != node.childrenEnd(); ++it) {
-            (*it)->accept(*this);
-        }
-    }
+		for (auto it = node.childrenBegin(); it != node.childrenEnd(); ++it) {
+			(*it)->accept(*this);
+		}
+	}
 };

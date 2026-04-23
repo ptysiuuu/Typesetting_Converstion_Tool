@@ -16,9 +16,7 @@ void LaTeXWriter::visitDocument(const Document &d) {
 				  "booktabs\n\n";
 	}
 
-	for (auto it = d.childrenBegin(); it != d.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(d);
 
 	if (standalone) {
 		output += R"(
@@ -28,11 +26,10 @@ void LaTeXWriter::visitDocument(const Document &d) {
 }
 
 void LaTeXWriter::visitParagraph(const Paragraph &p) {
-	if (!insideListItem)
+	if (listItemDepth == 0)
 		output += "\n";
-	for (auto it = p.childrenBegin(); it != p.childrenEnd(); ++it)
-		(*it)->accept(*this);
-	if (!insideListItem)
+	visitChildren(p);
+	if (listItemDepth == 0)
 		output += "\n\n";
 }
 
@@ -55,25 +52,19 @@ void LaTeXWriter::visitHeading(const Heading &h) {
 		break;
 	}
 	}
-	for (auto it = h.childrenBegin(); it != h.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
-	output += R"(}\n)";
+	visitChildren(h);
+	output += "}\n";
 }
 
 void LaTeXWriter::visitBoldText(const BoldText &b) {
 	output += R"(\textbf{)";
-	for (auto it = b.childrenBegin(); it != b.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(b);
 	output += "}";
 }
 
 void LaTeXWriter::visitItalicText(const ItalicText &i) {
 	output += R"(\textit{)";
-	for (auto it = i.childrenBegin(); it != i.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(i);
 	output += "}";
 }
 
@@ -84,8 +75,13 @@ void LaTeXWriter::visitInlineCode(const InlineCode &ic) {
 }
 
 void LaTeXWriter::visitFencedCodeBlock(const FencedCodeBlock &fcb) {
-	output += R"(\begin{lstlisting}[language=)";
-	output += fcb.getLanguage();
+	const std::string &lang = fcb.getLanguage();
+	if (!lang.empty()) {
+		output += R"(\begin{lstlisting}[language=)" + lang + "]\n";
+	} else {
+		output += R"(\begin{lstlisting})"
+				  "\n";
+	}
 	output += "]\n";
 	output += fcb.getContent();
 	output += R"(\end{lstlisting})"
@@ -95,9 +91,7 @@ void LaTeXWriter::visitFencedCodeBlock(const FencedCodeBlock &fcb) {
 void LaTeXWriter::visitUnorderedList(const UnorderedList &ul) {
 	output += R"(\begin{itemize})"
 			  "\n";
-	for (auto it = ul.childrenBegin(); it != ul.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(ul);
 	output += R"(\end{itemize})"
 			  "\n";
 }
@@ -106,9 +100,7 @@ void LaTeXWriter::visitOrderedList(const OrderedList &ol) {
 	output += R"(\begin{enumerate})"
 			  "\n";
 
-	for (auto it = ol.childrenBegin(); it != ol.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(ol);
 
 	output += R"(\end{enumerate})"
 			  "\n";
@@ -116,10 +108,9 @@ void LaTeXWriter::visitOrderedList(const OrderedList &ol) {
 
 void LaTeXWriter::visitListItem(const ListItem &li) {
 	output += R"(\item )";
-	insideListItem = true;
-	for (auto it = li.childrenBegin(); it != li.childrenEnd(); ++it)
-		(*it)->accept(*this);
-	insideListItem = false;
+	++listItemDepth;
+	visitChildren(li);
+	--listItemDepth;
 	output += "\n";
 }
 
@@ -127,9 +118,7 @@ void LaTeXWriter::visitLink(const Link &l) {
 	output += R"(\href{)";
 	output += l.getUrl();
 	output += "}{";
-	for (auto it = l.childrenBegin(); it != l.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(l);
 	output += "}";
 }
 
@@ -139,17 +128,13 @@ void LaTeXWriter::visitImage(const Image &i) {
 	output += i.getUrl();
 	output += "}\n";
 	output += R"(\caption{)";
-	for (auto it = i.childrenBegin(); it != i.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(i);
 	output += R"(} \end{figure})";
 }
 
 void LaTeXWriter::visitBlockQuote(const BlockQuote &bq) {
 	output += R"(\begin{quote})";
-	for (auto it = bq.childrenBegin(); it != bq.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
+	visitChildren(bq);
 	output += R"(\end{quote})";
 }
 
@@ -198,11 +183,7 @@ void LaTeXWriter::visitTableRow(const TableRow &tr) {
 			  "\n";
 }
 
-void LaTeXWriter::visitTableCell(const TableCell &tc) {
-	for (auto it = tc.childrenBegin(); it != tc.childrenEnd(); ++it) {
-		(*it)->accept(*this);
-	}
-}
+void LaTeXWriter::visitTableCell(const TableCell &tc) { visitChildren(tc); }
 
 void LaTeXWriter::visitText(const Text &t) {
 	std::string rawText = t.getText();
@@ -216,6 +197,7 @@ void LaTeXWriter::visitLineBreak(const LineBreak &) { output += "\\\\\n"; }
 
 std::string LaTeXWriter::escapeLatex(const std::string &text) {
 	std::string result = "";
+	result.reserve(text.size());
 	for (auto character : text) {
 		switch (character) {
 		case '&':
