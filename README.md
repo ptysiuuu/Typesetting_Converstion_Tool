@@ -123,8 +123,8 @@ doxygen Doxyfile
 
 ### Creating a output file:
 
-`python3 cli/main.py README.md --format typst --output readme.typ`
+`uv run cli/main.py README.md --format typst --output readme.typ`
 
 ### Print to stdout:
 
-`python3 cli/main.py README.md --format latex`
+`uv run cli/main.py README.md --format latex`
