@@ -12,7 +12,7 @@ target_compile_options(project_warnings INTERFACE
     -Wextra
     -Werror
     -Wpedantic
-   #  -fsanitize=undefined
+   # -fsanitize=undefined is disabled for now because cmark-gfm is fetched without it causing errors
 )
 target_link_options(project_warnings INTERFACE)
 
