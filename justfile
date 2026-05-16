@@ -6,7 +6,7 @@ default:
 
 # Setup
 
-# Install all dependencies and build the C++ module (Linux)
+# Install all dependencies and build the C++ module
 setup: conan-install cmake-configure build sync
 
 # Install Conan C++ dependencies

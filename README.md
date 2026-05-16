@@ -17,10 +17,10 @@ The project is a hybrid C++/Python application:
 ## Prerequisites
 
 - **CMake** >= 3.20
-- **Conan** 2.x — `pip install conan`
+- **Conan** 2.x - `pip install conan`
 - **Python** 3.11+
-- **uv** — `pip install uv`
-- **just** (recommended task runner) — see [just github](https://github.com/casey/just)
+- **uv** - `pip install uv`
+- **just** (task runner) - see [just github](https://github.com/casey/just)
 
 ## Quick Start
 
@@ -45,7 +45,7 @@ Run `just` with no arguments to list all available recipes.
 |------|------|--------|
 | [black](https://black.readthedocs.io/) | Auto-formatter | `pyproject.toml` |
 | [ruff](https://docs.astral.sh/ruff/) | Linter | `pyproject.toml` |
-| [pytest](https://pytest.org/) | Test runner | — |
+| [pytest](https://pytest.org/) | Test runner | - |
 
 **Format Python code:**
 ```bash
