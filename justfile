@@ -1,4 +1,4 @@
-# Typesetting Conversion Tool — task runner
+# Typesetting Conversion Tool runner
 
 # Show available recipes
 default:
