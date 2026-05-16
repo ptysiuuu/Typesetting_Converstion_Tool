@@ -1,7 +1,7 @@
 [project]
-name = "typesetting-converstion-tool"
+name = "typesetting-conversion-tool"
 version = "0.1.0"
-description = "Add your description here"
+description = "Convert GitHub Flavored Markdown to LaTeX or Typst via a C++23 core"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
@@ -10,4 +10,27 @@ dependencies = []
 dev = [
     "black>=26.3.1",
     "pytest>=9.0.3",
+    "ruff>=0.4.0",
 ]
+
+# Black
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+# Ruff
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+# E/W = pycodestyle, F = pyflakes, I = isort, UP = pyupgrade
+select = ["E", "W", "F", "I", "UP"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["converter_bindings"]
+
+# Pytest
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]

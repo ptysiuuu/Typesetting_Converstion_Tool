@@ -31,7 +31,7 @@ def main():
         if not os.path.exists(args.source):
             print(f"Error: File '{args.source}' does not exist.")
             return
-        with open(args.source, "r", encoding="utf-8") as f:
+        with open(args.source, encoding="utf-8") as f:
             content = f.read()
         result = converter_bindings.convert_markdown(content, args.format)
 

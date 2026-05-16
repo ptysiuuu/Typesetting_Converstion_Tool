@@ -12,38 +12,100 @@ The project is a hybrid C++/Python application:
 - **Python bindings** - `pybind11` exposes `convert_markdown(source_text, target_format)` to Python.
 - **Python CLI** - `cli/main.py` provides a command-line interface for end users.
 
+---
+
 ## Prerequisites
 
-### Common
-
 - **CMake** >= 3.20
-- **Conan** 2.x - `pip install conan`
+- **Conan** 2.x — `pip install conan`
 - **Python** 3.11+
-- **uv** - `pip install uv`
+- **uv** — `pip install uv`
+- **just** (recommended task runner) — see [just github](https://github.com/casey/just)
+
+## Quick Start
+
+The project uses just making setup very easy and straightforward:
+
+```bash
+just setup      # install all dependencies + build the C++ module
+just test       # run all tests (C++ + Python)
+just lint       # lint Python code with ruff
+just format     # auto-format Python (black) and C++ (clang-format)
+```
+
+Run `just` with no arguments to list all available recipes.
+
+---
+
+## Tools & Code Quality
+
+### Python
+
+| Tool | Role | Config |
+|------|------|--------|
+| [black](https://black.readthedocs.io/) | Auto-formatter | `pyproject.toml` |
+| [ruff](https://docs.astral.sh/ruff/) | Linter | `pyproject.toml` |
+| [pytest](https://pytest.org/) | Test runner | — |
+
+**Format Python code:**
+```bash
+uv run black .
+# or via just:
+just format-py
+```
+
+**Lint Python code:**
+```bash
+uv run ruff check .
+# or via just:
+just lint-py
+```
+
+### C++
+
+| Tool | Role | Config |
+|------|------|--------|
+| [clang-format](https://clang.llvm.org/docs/ClangFormat.html) | Auto-formatter | `.clang-format` |
+| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) | Linter / static analyser | `.clang-tidy` (optional) |
+
+**Format C++ code:**
+```bash
+just format-cpp
+```
+
+**Lint C++ code** (requires a compilation database which is generated automatically by CMake):
+```bash
+just lint-cpp
+```
 
 ---
 
 ## Building
 
-### Configure a Conan profile
+### 1. Configure a Conan profile
 
 ```bash
 conan profile detect --force
 ```
 
-There are also project provided profiles:
+Project-provided profiles:
 
 - **Linux / clang-18:** `profiles/ubuntu-llvm`
 - **macOS / Apple Silicon:** `profiles/macos-llvm`
 
-### Install C++ dependencies via Conan
+### 2. Install C++ dependencies via Conan
 
 **Linux:**
 ```bash
 conan install . --build=missing -pr profiles/ubuntu-llvm --output-folder=build
 ```
 
-### Configure CMake
+**macOS:**
+```bash
+conan install . --build=missing -pr profiles/macos-llvm --output-folder=build
+```
+
+### 3. Configure CMake
 
 **Linux (clang-18):**
 ```bash
@@ -51,10 +113,15 @@ cmake -B build \
   -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake \
   -DCMAKE_CXX_COMPILER=clang++-18 \
   -DCMAKE_C_COMPILER=clang-18 \
-  -DCMAKE_BUILD_TYPE=Debug
+  -DCMAKE_BUILD_TYPE=Release
 ```
 
-### Compile
+**macOS:**
+```bash
+cmake --preset macos-llvm
+```
+
+### 4. Compile
 
 ```bash
 cmake --build build
@@ -73,6 +140,8 @@ This produces:
 
 ```bash
 ./build/cpp_tests
+# or:
+just test-cpp
 ```
 
 ### Python tests (pytest)
@@ -87,15 +156,29 @@ Then run:
 
 ```bash
 uv run pytest tests/python/ -v
+# or:
+just test-py
 ```
+
+### All tests
+
+```bash
+just test
+```
+
+---
 
 ## Code Documentation
 
-You can use doxygen for C++ API documentation
+Generate C++ API documentation with Doxygen:
 
 ```bash
 doxygen Doxyfile
+# or:
+just docs
 ```
+
+---
 
 ## Project Structure
 
@@ -114,17 +197,24 @@ doxygen Doxyfile
 │   ├── cpp/           # Catch2 unit tests
 │   └── python/        # pytest tests
 ├── profiles/          # Conan build profiles
+├── justfile           # Task runner recipes
 ├── CMakeLists.txt
 ├── conanfile.txt
 └── pyproject.toml
 ```
 
-## Example usage
+---
 
-### Creating a output file:
+## Example Usage
 
-`uv run cli/main.py README.md --format typst --output readme.typ`
+### Output to file
 
-### Print to stdout:
+```bash
+uv run cli/main.py README.md --format typst --output readme.typ
+```
 
-`uv run cli/main.py README.md --format latex`
+### Print to stdout
+
+```bash
+uv run cli/main.py README.md --format latex
+```

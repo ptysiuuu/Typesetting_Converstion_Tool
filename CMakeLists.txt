@@ -6,6 +6,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Default to Release
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "No build type specified — defaulting to Release")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+        "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
+endif()
+
 add_library(project_warnings INTERFACE)
 target_compile_options(project_warnings INTERFACE
     -Wall
@@ -95,6 +103,7 @@ pybind11_add_module(converter_bindings bindings/bindings.cpp)
 target_link_libraries(converter_bindings PRIVATE
     core_logic
     project_warnings
+	pybind11::pybind11
 )
 
 # C++ tests

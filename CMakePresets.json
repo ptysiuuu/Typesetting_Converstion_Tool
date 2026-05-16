@@ -9,12 +9,32 @@
         "cacheVariables": {
           "CMAKE_C_COMPILER":   "/opt/homebrew/opt/llvm/bin/clang",
           "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+          "CMAKE_BUILD_TYPE":   "Release"
+        }
+      },
+      {
+        "name": "macos-llvm-debug",
+        "displayName": "macOS – Homebrew LLVM (Apple Silicon) [Debug]",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_C_COMPILER":   "/opt/homebrew/opt/llvm/bin/clang",
+          "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
           "CMAKE_BUILD_TYPE":   "Debug"
         }
       },
       {
         "name": "linux-default",
         "displayName": "Linux – system compiler",
+        "generator": "Ninja",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release"
+        }
+      },
+      {
+        "name": "linux-debug",
+        "displayName": "Linux – system compiler [Debug]",
         "generator": "Ninja",
         "binaryDir": "${sourceDir}/build",
         "cacheVariables": {
