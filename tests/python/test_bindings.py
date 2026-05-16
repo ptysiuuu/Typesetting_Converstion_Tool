@@ -1,7 +1,3 @@
-import os
-import sys
-
-sys.path.append(os.path.abspath("build"))
 import pytest
 
 import converter_bindings

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["scikit-build-core>=0.10.0"]
+build-backend = "scikit_build_core.build"
+
 [project]
 name = "typesetting-conversion-tool"
 version = "0.1.0"
@@ -5,6 +9,16 @@ description = "Convert GitHub Flavored Markdown to LaTeX or Typst via a C++23 co
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
+
+[tool.scikit-build]
+cmake.args = [
+    "-DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake",
+    "-DCMAKE_PREFIX_PATH=build",
+    "-DCMAKE_BUILD_TYPE=Release",
+	"-DCMAKE_CXX_COMPILER=clang++-18",
+    "-DCMAKE_C_COMPILER=clang-18"
+]
+editable.mode = "redirect"
 
 [dependency-groups]
 dev = [

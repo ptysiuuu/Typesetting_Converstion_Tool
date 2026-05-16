@@ -35,6 +35,8 @@ void ThematicBreak::accept(WriterVisitor &v) { v.visitThematicBreak(*this); }
 
 void InlineCode::accept(WriterVisitor &v) { v.visitInlineCode(*this); }
 
-void FencedCodeBlock::accept(WriterVisitor &v) { v.visitFencedCodeBlock(*this); }
+void FencedCodeBlock::accept(WriterVisitor &v) {
+	v.visitFencedCodeBlock(*this);
+}
 
 void LineBreak::accept(WriterVisitor &v) { v.visitLineBreak(*this); }

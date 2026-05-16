@@ -6,14 +6,18 @@ default:
 
 # Setup
 
-# Install all dependencies and build the C++ module
-setup: conan-install cmake-configure build sync
+# Install all dependencies, build C++ module (via uv) and compile C++ tests
+setup: conan-install sync build-cpp-tests
 
 # Install Conan C++ dependencies
 conan-install:
 	conan install . --build=missing -pr profiles/ubuntu-llvm -s build_type=Release --output-folder=build
 
-# Configure CMake in Release mode
+# Install Python dev dependencies and build C++ bindings (scikit-build-core)
+sync:
+	uv sync
+
+# Configure CMake in Release mode (needed for C++ tests and compile_commands.json)
 cmake-configure:
 	cmake -B build \
 		-DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake \
@@ -22,13 +26,9 @@ cmake-configure:
 		-DCMAKE_C_COMPILER=clang-18 \
 		-DCMAKE_BUILD_TYPE=Release
 
-# Build C++ targets
-build:
-	cmake --build build
-
-# Install Python dev dependencies
-sync:
-	uv sync
+# Build pure C++ native tests
+build-cpp-tests: cmake-configure
+	cmake --build build --target cpp_tests
 
 # Testing
 
@@ -55,7 +55,7 @@ format-py:
 # Format C++ code with clang-format
 format-cpp:
 	find src include bindings tests/cpp -name '*.cpp' -o -name '*.h' \
-	  | xargs clang-format -i
+	  | xargs clang-format-18 -i
 
 # Linting
 
@@ -81,6 +81,7 @@ docs:
 # Remove all build artefacts
 clean:
 	rm -rf build/
+	rm -rf _skbuild/
 
 # Remove build artefacts and Python virtual environment
 clean-all: clean

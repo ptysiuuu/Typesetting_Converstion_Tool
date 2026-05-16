@@ -7,7 +7,7 @@
 
 std::string convert_markdown(const std::string &source_text,
 							 const std::string &target_format) {
-	GFMParser parser; 
+	GFMParser parser;
 	auto document = parser.parse(source_text);
 
 	if (!document) {

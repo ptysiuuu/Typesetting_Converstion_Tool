@@ -105,6 +105,8 @@ target_link_libraries(converter_bindings PRIVATE
 	pybind11::pybind11
 )
 
+install(TARGETS converter_bindings DESTINATION .)
+
 # C++ tests
 add_executable(cpp_tests
     tests/cpp/test_ast.cpp
