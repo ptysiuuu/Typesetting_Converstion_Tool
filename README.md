@@ -218,3 +218,9 @@ uv run cli/main.py README.md --format typst --output readme.typ
 ```bash
 uv run cli/main.py README.md --format latex
 ```
+
+## Reflections
+
+The initial requirements, submitted in the initial documentation, have been succesfully fulfilled.
+The biggest problems encountered were regarding linking the cmark-gfm library to the project.
+With how the project is structured, it will be very easy to add new formats in the future and extending the tool with a new input format doesn't require adding it as an output option (and vice-versa) making the process adaptable and comfortable. Thanks to the backend being implemented in C++, the application is fast and efficient. The last changes that were made before submission make the project super easy to build and mantain using one-liners thanks to just and the build process is unified under uv.
